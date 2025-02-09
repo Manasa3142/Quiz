@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: whitesmoke;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 50px;
+            border-radius: 15px;
+            width: 600px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .quiz-container:hover {
+            transform: scale(1.05);
+        }
+        .question {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: black;
+        }
+        .answer-btn {
+            display: inline-block;
+            padding: 14px;
+            margin: 12px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 8px;
+            width: 30%;
+            transition: background-color 0.3s ease;
+        }
+        .answer-btn:hover {
+            background-color: #0056b3;
+        }
+        .answer-btn:active {
+            background-color: #004080;
+        }
+        .score {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 30px;
+            color: #333;
+        }
+        .question-section {
+            margin-bottom: 25px;
+        }
+        .question-section input {
+            padding: 12px;
+            font-size: 18px;
+            width: 80%;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        #tryAgainBtn {
+            background-color: #28a745;
+        }
+        #tryAgainBtn:hover {
+            background-color: #218838;
+        }
+        #submitBtn {
+            background-color: green;
+            color: white;
+        }
+        #submitBtn:hover {
+            background-color: green;
+        }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+        #backBtn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="quiz">
+            <!-- Questions and answers will be loaded here dynamically -->
+        </div>
+        <div class="button-container">
+            <button id="submitBtn" class="answer-btn" onclick="nextQuestion()">Next</button>
+        </div>
+        <button id="tryAgainBtn" class="answer-btn" onclick="reloadQuiz()" style="display: none;">Try Again</button>
+        <div id="scoreBox" class="score" style="display: none;"></div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "1. HTML is a ______.", answer: "markup language" },
+            { question: "2. HTML is an acronym for ______.", answer: "HyperText Markup Language" },
+            { question: "3. The HTML tag used to define a link is <_____>.", answer: "a" },
+            { question: "4. The HTML tag used to define a paragraph is <______>.", answer: "p" },
+            { question: "5. The HTML tag used to display an image is <______>.", answer: "img" },
+            { question: "6. The HTML tag used to insert a line break is <______>.", answer: "br" },
+            { question: "7. To create a heading in HTML, we use the <_____> tag.", answer: "h1" },
+            { question: "8. The HTML tag used to create a form is <___>.", answer: "form" },
+            { question: "9. To create a table in HTML, we use the <____> tag.", answer: "table" },
+            { question: "10. In HTML, to make text bold, we use the ___tag.", answer: "<b>" },
+            { question: "11. To create a table row in HTML, we use the <___>tag.", answer: "tr" },
+            { question: "12. The HTML tag used to define a button is______.", answer: "button" },
+            { question: "13. To define a radio button in HTML, we use______ >.", answer: "input type='radio'" },
+            { question: "14. The HTML tag used to display a horizontal line is.", answer: "hr" },
+            { question: "15. To create a comment in HTML, we use <___>.", answer: "!--" },
+            { question: "16. To set the background color of a webpage, we use the <body> attribute in the tag.", answer: "background-color" },
+            { question: "17. To define a checkbox in HTML, we use ", answer: "input type='checkbox'" },
+            { question: "18. The HTML tag used to define a text input field" ,answer: "input type='text'" },
+            { question: "19. The HTML tag used to define a division or section in a webpage is <___>.", answer: "div" },
+            { question: "20. The HTML element to define Important text is <_____>.", answer: "strong" },
+            { question: "21. To add a description to an image in HTML, we use the <____> attribute.", answer: "alt" },
+            { question: "22. To create a link that opens in a new tab target = _____", answer: "target='_blank'" },
+            { question: "23. The HTML tag used to define a quotation is .", answer: "blockquote" },
+            { question: "24. Which character is used to indicate an end tag?", answer: "/" },
+            { question: "25. Which list in HTML is used to define a numbered list?", answer: "ol" },
+            { question: "26. What does CSS stand for?", answer: "Cascading Style Sheets" },
+            { question: "27. Where in an HTML document is the correct place to refer to an external style sheet?", answer: "head" },
+            { question: "28. To change the text color, we use the color property.", answer: "color" },
+            { question: "29. In CSS, an ID selector starts with___", answer: "#" },
+            { question: "30. To change the font of text, we use font-family.", answer: "font-family" },
+            { question: "31. To add space inside an element, we use padding.", answer: "padding" },
+            { question: "32. To add space outside an element, we use margin.", answer: "margin" },
+            { question: "33. To center text, we use text-align.", answer: "text-align:center" },
+            { question: "34. To remove the underline from a link, we use text-decoration.", answer: "text-decoration:none" },
+            { question: "35. Which HTML tag is used to define an internal style sheet?", answer: "style" },
+            { question: "36. In CSS, a class selector starts with___", answer: "." },
+            { question: "37. To make the corners of an element rounded, we use border-radius.", answer: "border-radius" },
+            { question: "38. To change the transparency of an element, we use opacity.", answer: "opacity" },
+            { question: "39. Which combinator is used to define child combinator?", answer: ">" },
+            { question: "40. Which of the following CSS property is used to specify the space between every letter inside an element?", answer: "letter-spacing" },
+            { question: "41. Which of the following is the correct syntax to select the p siblings of a div element?", answer: "div ~ p" },
+            { question: "42. The CSS property used to draw a line around the elements outside the border?", answer: "outline" },
+            { question: "43. The CSS property used to set the distance between the borders of the adjacent cells in a table is border-spacing.", answer: "border-spacing" },
+            { question: "44. To align items inside a flexbox container, we use justify-content.", answer: "justify-content" },
+            { question: "45. The CSS property used to specify the width of an element is width.", answer: "width" },
+            { question: "46. Which CSS property is used to change the style of the mouse cursor when hovering over an element?", answer: "cursor" },
+            { question: "47. The CSS property used to make the background color of an element transparent is background-color: transparent.", answer: "background-color:transparent" },
+            { question: "48. To make text bold, we use font-weight.", answer: "font-weight" },
+            { question: "49. To hide an element in CSS, we use display: none;", answer: "display:none" },
+            { question: "50. Which CSS property is used to change the style of the mouse cursor when hovering over an element?", answer: "cursor" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const questionData = questions[currentQuestionIndex];
+                const quizDiv = document.getElementById("quiz");
+
+                quizDiv.innerHTML = `
+                    <div class="question-section">
+                        <div class="question">${questionData.question}</div>
+                        <input type="text" id="answer" placeholder="Your answer">
+                    </div>
+                `;
+
+                if (currentQuestionIndex === questions.length - 1) {
+                    document.getElementById("submitBtn").innerText = "Submit";
+                }
+            } else {
+                showScore();
+            }
+        }
+
+        function nextQuestion() {
+            const userAnswer = document.getElementById("answer").value.trim().toLowerCase();
+            const correctAnswer = questions[currentQuestionIndex].answer.toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex === questions.length) {
+                showScore();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function showScore() {
+            const quizDiv = document.getElementById("quiz");
+            const scoreBox = document.getElementById("scoreBox");
+
+            quizDiv.innerHTML = "";
+            scoreBox.style.display = "block";
+            scoreBox.innerHTML = `Your score is: ${score} out of ${questions.length}`;
+            document.getElementById("tryAgainBtn").style.display = "inline-block";
+            document.getElementById("submitBtn").style.display = "none";
+        }
+
+        function reloadQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+            document.getElementById("scoreBox").style.display = "none";
+            document.getElementById("tryAgainBtn").style.display = "none";
+            document.getElementById("submitBtn").style.display = "inline-block";
+            document.getElementById("submitBtn").innerText = "Next";
+        }
+
+
+        loadQuestion();
+    </script>
+</body>
+</html>
